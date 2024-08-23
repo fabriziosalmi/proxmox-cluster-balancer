@@ -1,0 +1,20 @@
+proxmox_hosts:
+  - name: proxmox1
+    address: 192.168.5.1
+    user: root
+    password: password
+    key_path: # optional, if using key-based authentication
+    cpu_threshold: 2.0
+    memory_threshold: 0.8
+  - name: proxmox2
+    address: 192.168.5.2
+    user: root
+    password: password
+    key_path: # optional, if using key-based authentication
+    cpu_threshold: 0.9
+    memory_threshold: 0.7
+
+default_params:
+  cpu_threshold: 1.0
+  memory_threshold: 0.8
+  migration_strategy: load_based
