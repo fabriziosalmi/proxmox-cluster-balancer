@@ -1,20 +1,36 @@
+# --- Proxmox Cluster Balancer Configuration ---
+
+# This configuration file defines the parameters for managing your Proxmox cluster.
+
+# --- Proxmox Host Settings ---
 proxmox_hosts:
   - name: proxmox1
-    address: 192.168.5.1
-    user: root
-    password: password
-    key_path: # optional, if using key-based authentication
-    cpu_threshold: 2.0
-    memory_threshold: 0.8
+    address: 192.168.5.1    # IP Address or hostname of the Proxmox server.
+    user: root             # Username for SSH access.
+    password: password     # Password for SSH access (optional: use key_path for key-based auth).
+    key_path: # /path/to/your/private/key  # Optional: Path to your private SSH key for key-based authentication.
+    cpu_threshold: 2.0     # CPU load threshold as a percentage (e.g., 2.0 = 200%). If not set, the global threshold will be used.
+    memory_threshold: 0.8  # Memory usage threshold as a fraction (e.g., 0.8 = 80%). If not set, the global threshold will be used.
   - name: proxmox2
     address: 192.168.5.2
     user: root
     password: password
-    key_path: # optional, if using key-based authentication
+    key_path: # /path/to/your/private/key  # Optional: Path to your private SSH key for key-based authentication.
     cpu_threshold: 0.9
     memory_threshold: 0.7
 
+# --- Default Parameters ---
 default_params:
-  cpu_threshold: 1.0
-  memory_threshold: 0.8
-  migration_strategy: load_based
+  cpu_threshold: 1.0      # Default CPU load threshold. If host has its own defined it will be used.
+  memory_threshold: 0.8   # Default memory usage threshold. If host has its own defined it will be used.
+  migration_strategy: load_based  # Strategy for migration (e.g., 'load_based').
+  
+  # --- Scoring Parameters ---
+  # Weights used for calculating balance scores and suitability scores.
+  balance_score_cpu_weight: 0.7   # Weight for CPU load in the balance score calculation.
+  balance_score_memory_weight: 0.3 # Weight for memory usage in the balance score calculation.
+
+  migration_memory_weight: 30     # Weight for available memory in migration suitability score calculation.
+  migration_core_weight: 30       # Weight for available CPU cores in migration suitability score calculation.
+  migration_balance_weight: 40    # Weight for balance score improvement in migration suitability score calculation.
+  max_migration_suitability_score: 100 # Maximum score a suitability can achieve.
