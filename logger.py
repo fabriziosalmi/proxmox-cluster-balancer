@@ -24,20 +24,35 @@ def setup_logging(log_level=logging.INFO, log_format=DEFAULT_LOG_FORMAT, log_fil
     logger = logging.getLogger('proxmox_balancer') # Set a global logger name
     logger.setLevel(log_level)
 
-
-    # Create file handler
-    file_handler = logging.FileHandler(log_file)
-    file_handler.setLevel(logging.DEBUG) # Log everything to file
-    file_formatter = logging.Formatter(log_format)
-    file_handler.setFormatter(file_formatter)
+    # Create file handler only if the log file path is valid and writable
+    if log_file:
+        # Ensure the directory exists where the log file will be created
+        log_dir = os.path.dirname(log_file)
+        if log_dir and not os.path.exists(log_dir):
+            try:
+                os.makedirs(log_dir)
+            except OSError:
+                # If we cannot create the directory, skip the file handler
+                # The logger will still work via the console handler
+                log_file = None
+        
+        if log_file:
+            try:
+                file_handler = logging.FileHandler(log_file)
+                file_handler.setLevel(logging.DEBUG) # Log everything to file
+                file_formatter = logging.Formatter(log_format)
+                file_handler.setFormatter(file_formatter)
+                logger.addHandler(file_handler)
+            except (IOError, OSError):
+                # If we cannot open the file (e.g., permission denied), skip the file handler
+                # The logger will still work via the console handler
+                pass
 
     # Create console handler
     console_handler = logging.StreamHandler()
     console_handler.setLevel(log_level)
     console_formatter = logging.Formatter(log_format)
     console_handler.setFormatter(console_formatter)
-
-    logger.addHandler(file_handler)
     logger.addHandler(console_handler)
     return logger
 
