@@ -24,6 +24,10 @@ def setup_logging(log_level=logging.INFO, log_format=DEFAULT_LOG_FORMAT, log_fil
     logger = logging.getLogger('proxmox_balancer') # Set a global logger name
     logger.setLevel(log_level)
 
+    # Remove existing handlers to avoid duplicates on reconfiguration
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+
     # Create file handler only if the log file path is valid and writable
     if log_file:
         # Ensure the directory exists where the log file will be created
