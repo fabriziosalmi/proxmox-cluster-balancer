@@ -184,6 +184,8 @@ def evaluate_migration_target(candidate, hosts_metrics, default_params):
     best_score = None
     best_balance_score_after_migration = None
     best_migration_suitability_score = None
+    best_cpu_score = None
+    best_memory_score = None
     sorted_hosts = sorted(hosts_metrics.items(), key=lambda item: item[1]['balance_score'], reverse=True)
 
     for target_host_name, target_host_metrics in sorted_hosts:
@@ -224,8 +226,11 @@ def evaluate_migration_target(candidate, hosts_metrics, default_params):
                 best_score = total_score
                 best_balance_score_after_migration = balance_score_after_migration
                 best_migration_suitability_score = migration_suitability_score
+                best_cpu_score = cpu_score
+                best_memory_score = memory_score
 
-    return best_target, best_score, best_balance_score_after_migration, best_migration_suitability_score
+    return (best_target, best_score, best_balance_score_after_migration, best_migration_suitability_score,
+            best_cpu_score, best_memory_score)
 
 
 def suggest_migrations(hosts_metrics, default_params):
@@ -235,8 +240,8 @@ def suggest_migrations(hosts_metrics, default_params):
     migration_candidates, overloaded_hosts = get_migration_candidates(hosts_metrics, default_params)
 
     for candidate in migration_candidates:
-        best_target, best_score, best_balance_score_after_migration, best_migration_suitability_score = evaluate_migration_target(
-            candidate, hosts_metrics, default_params)
+        (best_target, best_score, best_balance_score_after_migration, best_migration_suitability_score,
+         cpu_score, memory_score) = evaluate_migration_target(candidate, hosts_metrics, default_params)
 
         if best_target:
             reason = f"Better resource distribution: migration suitability score = {best_migration_suitability_score:.2f}"
