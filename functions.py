@@ -62,6 +62,13 @@ class SSHClient:
 
 
 # --- Metric Collection Functions ---
+def ssh_connect(host, user, password=None, key_path=None):
+    """Return an SSHClient already connected to host (key_path wins over password)."""
+    client = SSHClient(host, user, password=password, key_path=key_path)
+    client.connect()
+    return client
+
+
 def get_host_metrics(ssh_client):
     """Fetches host-level metrics."""
     commands = {
